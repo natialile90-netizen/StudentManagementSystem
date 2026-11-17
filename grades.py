@@ -1,16 +1,23 @@
+# სტუდენტების შეფასებების მართვა
+
 from validation import Validation
 
 
+# შეფასებების მართვის კლასი
 class GradeManager:
+
+    # საჭირო ობიექტების შექმნა
     def __init__(self, student_manager):
         self.student_manager = student_manager
         self.validation = Validation()
 
+    # სტუდენტისთვის შეფასების დამატება
     def add_grade(self):
         roll_number = input(
             "შეიყვანეთ სტუდენტის ნომერი: "
         ).strip()
 
+        # სტუდენტის მოძებნა
         student = self.student_manager.find_student(roll_number)
 
         if not student:
@@ -19,10 +26,12 @@ class GradeManager:
 
         grade = input("შეიყვანეთ შეფასება (0-100): ").strip()
 
+        # შეფასების შემოწმება
         if not self.validation.validate_grade(grade):
             print("შეფასება უნდა იყოს 0-დან 100-მდე!")
             return
 
+        # შეფასების დამატება და შენახვა
         try:
             student.grades.append(int(grade))
 
@@ -34,6 +43,7 @@ class GradeManager:
         except (ValueError, TypeError) as error:
             print("შეფასების დამატების შეცდომა:", error)
 
+    # შეფასების მიხედვით შედეგის განსაზღვრა
     def grade_category(self, grade):
         if grade >= 91:
             return "შესანიშნავი"
@@ -48,21 +58,25 @@ class GradeManager:
         else:
             return "არადამაკმაყოფილებელი"
 
+    # სტუდენტის საშუალო შეფასების ნახვა
     def average_grade(self):
         roll_number = input(
             "შეიყვანეთ სტუდენტის ნომერი: "
         ).strip()
 
+        # სტუდენტის მოძებნა
         student = self.student_manager.find_student(roll_number)
 
         if not student:
             print("სტუდენტი ვერ მოიძებნა!")
             return
 
+        # შემოწმება, აქვს თუ არა სტუდენტს შეფასებები
         if not student.grades:
             print("სტუდენტს შეფასებები არ აქვს!")
             return
 
+        # საშუალო შეფასების გამოთვლა
         try:
             average = student.get_average()
 
@@ -72,6 +86,7 @@ class GradeManager:
             print("საშუალო შეფასება:", round(average, 2))
             print("შედეგი:", self.grade_category(average))
 
+            # შემოწმება, ჩააბარა თუ არა სტუდენტმა
             if average >= 51:
                 print("სტატუსი: ჩაბარებული")
             else:
@@ -80,11 +95,13 @@ class GradeManager:
         except (ValueError, TypeError, ZeroDivisionError) as error:
             print("საშუალო შეფასების გამოთვლის შეცდომა:", error)
 
+    # სტუდენტის შეფასების შეცვლა
     def edit_grade(self):
         roll_number = input(
             "შეიყვანეთ სტუდენტის ნომერი: "
         ).strip()
 
+        # სტუდენტის მოძებნა
         student = self.student_manager.find_student(roll_number)
 
         if not student:
@@ -95,6 +112,7 @@ class GradeManager:
             print("სტუდენტს შეფასებები არ აქვს!")
             return
 
+        # სტუდენტის შეფასებების ჩვენება ნომრებით
         for index, grade in enumerate(student.grades, 1):
             print(index, "-", grade)
 
@@ -102,6 +120,7 @@ class GradeManager:
             "აირჩიეთ შესაცვლელი შეფასების ნომერი: "
         ).strip()
 
+        # არჩეული ნომრის შემოწმება
         if not choice.isdigit():
             print("არასწორი ნომერი!")
             return
@@ -116,10 +135,12 @@ class GradeManager:
             "შეიყვანეთ ახალი შეფასება (0-100): "
         ).strip()
 
+        # ახალი შეფასების შემოწმება
         if not self.validation.validate_grade(new_grade):
             print("შეფასება უნდა იყოს 0-დან 100-მდე!")
             return
 
+        # ძველი შეფასების ახლით შეცვლა
         try:
             student.grades[choice - 1] = int(new_grade)
 
@@ -131,11 +152,13 @@ class GradeManager:
         except (ValueError, TypeError, IndexError) as error:
             print("შეფასების შეცვლის შეცდომა:", error)
 
+    # სტუდენტის შეფასების წაშლა
     def delete_grade(self):
         roll_number = input(
             "შეიყვანეთ სტუდენტის ნომერი: "
         ).strip()
 
+        # სტუდენტის მოძებნა
         student = self.student_manager.find_student(roll_number)
 
         if not student:
@@ -146,6 +169,7 @@ class GradeManager:
             print("სტუდენტს შეფასებები არ აქვს!")
             return
 
+        # შეფასებების ჩვენება ნომრებით
         for index, grade in enumerate(student.grades, 1):
             print(index, "-", grade)
 
@@ -153,6 +177,7 @@ class GradeManager:
             "აირჩიეთ წასაშლელი შეფასების ნომერი: "
         ).strip()
 
+        # არჩეული ნომრის შემოწმება
         if not choice.isdigit():
             print("არასწორი ნომერი!")
             return
@@ -163,6 +188,7 @@ class GradeManager:
             print("არასწორი ნომერი!")
             return
 
+        # შეფასების წაშლა და ცვლილების შენახვა
         try:
             student.grades.pop(choice - 1)
 

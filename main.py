@@ -1,9 +1,14 @@
+#სტუდენტების მართვის პროგრამის მთავარი ფაილი
+
 from student_manager import StudentManager
 from grades import GradeManager
 from storage import Storage
 
 
+# პროგრამის მთავარი კლასი
 class StudentManagementSystem:
+
+    #ობიექტების შექმნა:მონაცემების შესანახად, სტუდენტების სამართავად,შეფასების სამართავად
     def __init__(self):
         self.storage = Storage()
 
@@ -11,11 +16,13 @@ class StudentManagementSystem:
 
         self.grade_manager = GradeManager(self.student_manager)
 
+    # არჩეული მოქმედების შესრულება
     def show_result(self, title, function):
         print("\n" + "=" * 45)
         print(title.center(45))
         print("=" * 45)
 
+        # შეცდომის შემთხვევაში შეტყობინების ჩვენება
         try:
             function()
 
@@ -24,6 +31,7 @@ class StudentManagementSystem:
 
         print("=" * 45 + "\n")
 
+    # მთავარი მენიუს ჩვენება
     def show_menu(self):
         print("\n===== IT აკადემიის მართვის სისტემა =====")
         print("1. სტუდენტის დამატება")
@@ -41,18 +49,24 @@ class StudentManagementSystem:
         print("13. კურსების სტატისტიკა")
         print("0. გამოსვლა")
 
+    # პროგრამის მუშაობის დაწყება
     def run(self):
+
+        # შენახული სტუდენტების ჩატვირთვა
         loaded_students = self.storage.load_students()
 
+        # თუ ჩატვირთვისას შეცდომაა, პროგრამა ჩერდება
         if loaded_students is None:
             print("პროგრამა შეჩერდა მონაცემების დასაცავად!")
             return
 
         self.student_manager.students = loaded_students
 
+        # მენიუ მეორდება, სანამ მომხმარებელი არ გამოვა
         while True:
             self.show_menu()
 
+            # მომხმარებლის არჩევანის მიღება
             try:
                 choice = input("აირჩიეთ მოქმედება: ").strip()
 
@@ -61,6 +75,7 @@ class StudentManagementSystem:
                 print("გამოსასვლელად აირჩიეთ 0.")
                 continue
 
+            # არჩევანის მიხედვით მოქმედების შესრულება
             if choice == "1":
                 self.show_result(
                     "სტუდენტის დამატება",
@@ -139,6 +154,7 @@ class StudentManagementSystem:
                     self.student_manager.course_statistics
                 )
 
+            # პროგრამიდან გამოსვლა და მონაცემების შენახვა
             elif choice == "0":
                 if self.storage.save_students(
                     self.student_manager.students
@@ -150,10 +166,12 @@ class StudentManagementSystem:
                     print("მონაცემები ვერ შეინახა!")
                     print("სცადეთ თავიდან.")
 
+            # თუ მომხმარებელმა არასწორი ნომერი შეიყვანა
             else:
                 print("\nარასწორი არჩევანი! სცადეთ თავიდან.")
 
 
+# პროგრამის გაშვება
 if __name__ == "__main__":
     system = StudentManagementSystem()
     system.run()

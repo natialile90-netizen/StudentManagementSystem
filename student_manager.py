@@ -1,17 +1,24 @@
+# სტუდენტების დამატება, ძებნა, წაშლა და მართვა
+
 from student import Student
 from validation import Validation
 
 
+# სტუდენტების მართვის კლასი
 class StudentManager:
+
+    # სტუდენტების სიის და საჭირო მონაცემების შექმნა
     def __init__(self, storage):
         self.students = []
         self.courses = ["Python", "C#", "JavaScript", "Java", "C++"]
         self.validation = Validation()
         self.storage = storage
 
+    # სტუდენტების მონაცემების შენახვა
     def save(self):
         return self.storage.save_students(self.students)
 
+    # სტუდენტის ძებნა ნომრის მიხედვით
     def find_student(self, roll_number):
         for student in self.students:
             if student.roll_number == roll_number:
@@ -19,6 +26,7 @@ class StudentManager:
 
         return None
 
+    # პროგრამირების კურსის არჩევა
     def choose_course(self):
         print("\n===== პროგრამირების კურსები =====")
 
@@ -27,6 +35,7 @@ class StudentManager:
 
         choice = input("აირჩიეთ კურსი (1-5): ").strip()
 
+        # კურსის ნომრის შემოწმება
         if not choice.isdigit():
             print("კურსის ნომერი არასწორია!")
             return None
@@ -39,12 +48,14 @@ class StudentManager:
         print("კურსის ნომერი არასწორია!")
         return None
 
+    # ახალი სტუდენტის დამატება
     def add_student(self):
         name = input("შეიყვანეთ სტუდენტის სახელი: ").strip()
         surname = input("შეიყვანეთ სტუდენტის გვარი: ").strip()
         age = input("შეიყვანეთ ასაკი: ").strip()
         roll_number = input("შეიყვანეთ სტუდენტის ნომერი: ").strip()
 
+        # შეყვანილი მონაცემების შემოწმება
         if not self.validation.validate_name(name):
             print("სახელი არასწორია!")
             return
@@ -61,15 +72,18 @@ class StudentManager:
             print("სტუდენტის ნომერი უნდა შეიცავდეს მხოლოდ ციფრებს!")
             return
 
+        # შემოწმება, ხომ არ არსებობს სტუდენტი ამ ნომრით
         if self.find_student(roll_number):
             print("სტუდენტი ამ ნომრით უკვე არსებობს!")
             return
 
+        # სტუდენტისთვის კურსის არჩევა
         course = self.choose_course()
 
         if course is None:
             return
 
+        # ახალი სტუდენტის შექმნა
         try:
             student = Student(
                 name,
@@ -83,13 +97,16 @@ class StudentManager:
             print("სტუდენტის შექმნის შეცდომა:", error)
             return
 
+        # სტუდენტის სიაში დამატება
         self.students.append(student)
 
+        # მონაცემების ფაილში შენახვა
         if self.save():
             print("სტუდენტი წარმატებით დაემატა!")
         else:
             print("სტუდენტი დაემატა, მაგრამ ფაილში ვერ შეინახა!")
 
+    # ყველა სტუდენტის ჩვენება
     def show_students(self):
         if not self.students:
             print("სტუდენტები არ მოიძებნა!")
@@ -98,6 +115,7 @@ class StudentManager:
         for student in self.students:
             student.show_info()
 
+    # სტუდენტის მოძებნა და მისი ინფორმაციის ჩვენება
     def search_student(self):
         roll_number = input(
             "შეიყვანეთ სტუდენტის ნომერი: "
@@ -110,6 +128,7 @@ class StudentManager:
         else:
             print("სტუდენტი ვერ მოიძებნა!")
 
+    # სტუდენტის წაშლა
     def delete_student(self):
         roll_number = input(
             "შეიყვანეთ წასაშლელი სტუდენტის ნომერი: "
@@ -120,6 +139,7 @@ class StudentManager:
         if student:
             self.students.remove(student)
 
+            # ცვლილების შენახვა ფაილში
             if self.save():
                 print("სტუდენტი წარმატებით წაიშალა!")
             else:
@@ -127,6 +147,7 @@ class StudentManager:
         else:
             print("სტუდენტი ვერ მოიძებნა!")
 
+    # სტუდენტის მონაცემების შეცვლა
     def update_student(self):
         roll_number = input(
             "შეიყვანეთ სტუდენტის ნომერი: "
@@ -134,14 +155,17 @@ class StudentManager:
 
         student = self.find_student(roll_number)
 
+        # შემოწმება, მოიძებნა თუ არა სტუდენტი
         if not student:
             print("სტუდენტი ვერ მოიძებნა!")
             return
 
+        # ახალი მონაცემების შეყვანა
         new_name = input("შეიყვანეთ ახალი სახელი: ").strip()
         new_surname = input("შეიყვანეთ ახალი გვარი: ").strip()
         new_age = input("შეიყვანეთ ახალი ასაკი: ").strip()
 
+        # ახალი მონაცემების შემოწმება
         if not self.validation.validate_name(new_name):
             print("სახელი არასწორია!")
             return
@@ -159,6 +183,7 @@ class StudentManager:
         if new_course is None:
             return
 
+        # სტუდენტის ძველი მონაცემების ახლით შეცვლა
         try:
             student.name = new_name
             student.surname = new_surname
@@ -169,11 +194,13 @@ class StudentManager:
             print("მონაცემების განახლების შეცდომა:", error)
             return
 
+        # განახლებული მონაცემების შენახვა
         if self.save():
             print("სტუდენტის მონაცემები წარმატებით განახლდა!")
         else:
             print("მონაცემები შეიცვალა, მაგრამ ფაილში ვერ შეინახა!")
 
+    # სტუდენტების ჩვენება არჩეული კურსის მიხედვით
     def show_students_by_course(self):
         course = self.choose_course()
 
@@ -184,6 +211,7 @@ class StudentManager:
 
         count = 0
 
+        # მხოლოდ არჩეული კურსის სტუდენტების მოძებნა
         for student in self.students:
             if student.course == course:
                 student.show_info()
@@ -194,16 +222,19 @@ class StudentManager:
 
         print("სტუდენტების რაოდენობა:", count)
 
+    # სტუდენტების საერთო რაოდენობის ჩვენება
     def total_students(self):
         print(
             "სტუდენტების საერთო რაოდენობა:",
             len(self.students)
         )
 
+    # საუკეთესო სტუდენტის მოძებნა
     def top_student(self):
         best_student = None
         highest_average = -1
 
+        # სტუდენტების საშუალო შეფასებების შედარება
         for student in self.students:
             if student.grades:
                 average = student.get_average()
@@ -218,6 +249,7 @@ class StudentManager:
         else:
             print("შეფასებული სტუდენტები არ მოიძებნა!")
 
+    # თითოეულ კურსზე სტუდენტების რაოდენობის დათვლა
     def course_statistics(self):
         print("\n===== კურსების სტატისტიკა =====")
 
